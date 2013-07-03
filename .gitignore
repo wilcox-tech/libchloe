@@ -15,3 +15,8 @@
 *.exe
 *.out
 *.app
+
+# Vim crud
+*.sw[op]
+*.un*
+*.bak

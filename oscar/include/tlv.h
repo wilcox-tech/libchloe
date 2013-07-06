@@ -32,6 +32,6 @@ extern int64_t oscar_tlv_read(const char *data, uint64_t size, oscar_tlv *tlv);
 extern void oscar_tlv_free(oscar_tlv *tlv);
 extern int64_t oscar_tlv_read_chain(const char *data, uint64_t size, oscar_tlv_chain **tlvchain);
 extern void oscar_tlv_delete_chain(oscar_tlv_chain *tlvchain);
-extern char * oscar_tlv_create(const char *data, uint16_t type, uint16_t size);
+extern uint64_t oscar_tlv_create(const char *data, uint16_t type, uint16_t size, char *out);
 
 #endif

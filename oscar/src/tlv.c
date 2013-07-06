@@ -19,7 +19,7 @@
 /*
  * oscar_tlv_read - read a TLV from the given data - must contain all the data
  * in: data, size, empty TLV struct
- * out: -1 on insufficent data, otherwise length
+ * out: -1 on insufficent data, otherwise data read
  */
 int64_t oscar_tlv_read(const char *data, uint64_t size, oscar_tlv *tlv)
 {
@@ -39,7 +39,7 @@ int64_t oscar_tlv_read(const char *data, uint64_t size, oscar_tlv *tlv)
 	LCH_CALLOC(tlv->data, tlv->length, 1);
 	memcpy(tlv->data, &data[4], tlv->length);
 
-	return 0;
+	return OSCAR_TLV_HEADER + tlv->length;
 }
 
 /*
@@ -49,6 +49,8 @@ int64_t oscar_tlv_read(const char *data, uint64_t size, oscar_tlv *tlv)
  */
 void oscar_tlv_free(oscar_tlv *tlv)
 {
+	assert(tlv != NULL);
+
 	LCH_FREE(tlv->data);
 }
 
@@ -117,22 +119,18 @@ void oscar_tlv_delete_chain(oscar_tlv_chain *tlvchain)
 /*
  * oscar_tlv_create - create a TLV tuple from the given data
  * in: type, length, data
- * out: formed TLV packet
+ * out: formed TLV packet, returns size
  */
-char * oscar_tlv_create(const char *data, uint16_t type, uint16_t size)
+uint64_t oscar_tlv_create(const char *data, uint16_t type, uint16_t size, char *out)
 {
-	char *tlv;
-
 	assert(data != NULL);
-	assert(type);
+	assert(out != NULL);
 	assert(size);
 
-	LCH_CALLOC(tlv, OSCAR_TLV_HEADER + size, 1);
+	*((uint16_t *)&out[0]) = htons(type);
+	*((uint16_t *)&out[2]) = htons(size);
+	memcpy(&out[4], data, size);
 
-	*((uint16_t *)&tlv[0]) = htons(type);
-	*((uint16_t *)&tlv[2]) = htons(size);
-	memcpy(&tlv[4], data, size);
-
-	return tlv;
+	return size + OSCAR_TLV_HEADER;
 }
 
